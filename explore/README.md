@@ -1,6 +1,6 @@
-# flutter_learning
+# explore
 
-flutter learning.
+A new Flutter application.
 
 ## Getting Started
 
