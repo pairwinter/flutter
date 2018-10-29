@@ -6,7 +6,6 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final wordpair = WordPair('damon', 'liu');
     return MaterialApp(
       title: 'My App',
       home: Scaffold(
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
         ),
         body: Center(
 //          child: Text('home->body->Center>child(Text)'),
-          child: Text(wordpair.asPascalCase),
+          child: RandomWords(),
         ),
       ),
       theme: ThemeData(primarySwatch: Colors.green),
