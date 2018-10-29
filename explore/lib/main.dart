@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
       title: 'My App',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('My App title'),
+          title: Text('Startup Name Generator'),
         ),
         body: Center(
 //          child: Text('home->body->Center>child(Text)'),
@@ -30,9 +30,34 @@ class RandomWords extends StatefulWidget {
 }
 
 class RandomWordsState extends State<RandomWords> {
+  final _suggestions = <WordPair>[];
+  final _biggerFont = const TextStyle(fontSize: 18.0);
+
   @override
   Widget build(BuildContext context) {
-    final wordPair = WordPair.random();
-    return Text(wordPair.asPascalCase);
+    return _buildSuggestions();
   }
+
+  Widget _buildSuggestions() {
+    return ListView.builder(
+        padding: const EdgeInsets.all(16.0),
+        itemBuilder: (context, i) {
+          if (i.isOdd) {
+            return Divider();
+          }
+          final index = i ~/ 2;
+          if (index >= _suggestions.length) {
+            _suggestions.addAll(generateWordPairs().take(10));
+          }
+
+          return _buildRow(_suggestions[index]);
+        });
+  }
+
+  Widget _buildRow(WordPair wordPair) {
+    return ListTile(
+      title: Text(wordPair.asPascalCase, style: _biggerFont),
+    );
+  }
+
 }
