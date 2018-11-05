@@ -19,9 +19,11 @@ class FriendlyChat extends StatefulWidget {
   }
 }
 
-class FriendlyChatState extends State<FriendlyChat> {
+class FriendlyChatState extends State<FriendlyChat>
+    with TickerProviderStateMixin {
   final TextEditingController _textComposerController = TextEditingController();
   final List<ChatMessage> _chatMessages = <ChatMessage>[];
+  bool _isComposing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -59,12 +61,20 @@ class FriendlyChatState extends State<FriendlyChat> {
             controller: _textComposerController,
             onSubmitted: this._handleTextComposerSubmit,
             decoration: InputDecoration.collapsed(hintText: 'Send a message.'),
+            onChanged: (String text) {
+              this.setState(() {
+                _isComposing = text.trim().length > 0;
+              });
+            },
           )),
           Container(
             child: IconButton(
+                disabledColor: Colors.grey,
                 icon: Icon(Icons.send),
-                onPressed: () =>
-                    _handleTextComposerSubmit(_textComposerController.text)),
+                onPressed: _isComposing
+                    ? () =>
+                        _handleTextComposerSubmit(_textComposerController.text)
+                    : null),
           )
         ],
       ),
@@ -72,32 +82,41 @@ class FriendlyChatState extends State<FriendlyChat> {
   }
 
   void _handleTextComposerSubmit(String text) {
-    if (text.trim().length == 0) {
-      return;
-    }
     _textComposerController.clear();
-
+    ChatMessage chatMessage = ChatMessage(
+      name: WordPair.random().asPascalCase,
+      message: text.trim(),
+      animationController: AnimationController(
+          duration: Duration(milliseconds: 200),
+          vsync: this), //Note vsync: this
+    );
     this.setState(() {
-      _chatMessages.insert(
-          0,
-          ChatMessage(
-            name: WordPair.random().asPascalCase,
-            message: text.trim(),
-          ));
+      _isComposing = false;
+      _chatMessages.insert(0, chatMessage);
     });
+    chatMessage.animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    for (ChatMessage chatMessage in _chatMessages) {
+      chatMessage.animationController.dispose();
+    }
+    super.dispose();
   }
 }
 
 class ChatMessage extends StatelessWidget {
-  ChatMessage({this.message, this.name});
+  ChatMessage({this.message, this.name, this.animationController});
 
   final String message;
   final String name;
+  final AnimationController animationController;
 
   @override
   Widget build(BuildContext context) {
-    double c_width = MediaQuery.of(context).size.width*0.8;
-    return Container(
+    double c_width = MediaQuery.of(context).size.width * 0.8;
+    Container content = Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,5 +143,12 @@ class ChatMessage extends StatelessWidget {
         ],
       ),
     );
+    SizeTransition transition = SizeTransition(
+      sizeFactor:
+          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+      child: content,
+      axisAlignment: 0.0,
+    );
+    return transition;
   }
 }
