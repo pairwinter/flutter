@@ -8,15 +8,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'My App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Startup Name Generator'),
-        ),
-        body: Center(
-          child: RandomWords(),
-        ),
-      ),
-      theme: ThemeData(primarySwatch: Colors.green),
+      home: RandomWords(),
+      theme: ThemeData(primaryColor: Colors.green),
     );
   }
 }
@@ -35,7 +28,15 @@ class RandomWordsState extends State<RandomWords> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildSuggestions();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('State build app bar'),
+        actions: <Widget>[
+          IconButton(icon: const Icon(Icons.list), onPressed: _pushSaved)
+        ],
+      ),
+      body: _buildSuggestions(),
+    );
   }
 
   Widget _buildSuggestions() {
@@ -62,9 +63,9 @@ class RandomWordsState extends State<RandomWords> {
         alreadySaved ? Icons.favorite : Icons.favorite_border,
         color: alreadySaved ? Colors.red : null,
       ),
-      onTap: (){
+      onTap: () {
         setState(() {
-          if(alreadySaved){
+          if (alreadySaved) {
             _saved.remove(wordPair);
           } else {
             _saved.add(wordPair);
@@ -72,5 +73,27 @@ class RandomWordsState extends State<RandomWords> {
         });
       },
     );
+  }
+
+  void _pushSaved() {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      final Iterable<ListTile> tiles = _saved.map((WordPair pair) {
+        return ListTile(
+          title: Text(pair.asPascalCase, style: _biggerFont),
+        );
+      });
+      final List<Widget> dividedTiles =
+          ListTile.divideTiles(context: context, tiles: tiles).toList();
+
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Saved Suggestions-${tiles.length}'),
+        ),
+        body: ListView(
+          children: dividedTiles,
+        ),
+      );
+    }));
   }
 }
