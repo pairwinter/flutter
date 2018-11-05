@@ -115,7 +115,6 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double c_width = MediaQuery.of(context).size.width * 0.8;
     Container content = Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -127,18 +126,19 @@ class ChatMessage extends StatelessWidget {
               child: Text(name[0]),
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                name,
-                style: Theme.of(context).textTheme.subhead,
-              ),
-              Container(
-                width: c_width,
-                child: Text(message),
-              )
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  name,
+                  style: Theme.of(context).textTheme.subhead,
+                ),
+                Container(
+                  child: Text(message),
+                )
+              ],
+            ),
           )
         ],
       ),
