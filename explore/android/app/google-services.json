@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "394386518440",
+    "firebase_url": "https://mobile-explore.firebaseio.com",
+    "project_id": "mobile-explore",
+    "storage_bucket": "mobile-explore.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394386518440:android:c8f4c51e0de46180",
+        "android_client_info": {
+          "package_name": "ranqk.explore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "394386518440-sb86fe2rk4ikpltlir1ln5dr40ntmum1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQgz3ttSo6rBiGfRUJNiI3SHYj1tRia6o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
