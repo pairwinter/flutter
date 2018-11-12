@@ -6,14 +6,7 @@ void main() => runApp(BabyNames());
 class BabyNames extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Baby Names'),
-        ),
-        body: BabyNamesWidget(),
-      ),
-    );
+    return MaterialApp(home: BabyNamesWidget());
   }
 }
 
@@ -35,36 +28,110 @@ final _mockNames = [
 class BabyNamesState extends State<BabyNamesWidget> {
   @override
   Widget build(BuildContext context) {
-    return _buildBody();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Static Baby Names'),
+        actions: <Widget>[
+          IconButton(
+              icon: const Icon(Icons.more_horiz), onPressed: _gotoRealNames)
+        ],
+      ),
+      body: _buildStaticBody(),
+    );
   }
 
-  Widget _buildBody() {
+  // Go to new page
+  _gotoRealNames() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Dynamic baby Names'),
+        ),
+        body: Container(
+          child: Column(
+            children: <Widget>[
+              _buildStreamBody(),
+              Flexible(
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }));
+  }
+
+  Widget _buildStaticBody() {
     Container root = Container(
       child: ListView.builder(
         itemBuilder: (context, index) {
           final record = Record.fromMap(_mockNames[index]);
-          return Padding(
-            key: ValueKey(record.name),
-            padding: EdgeInsets.all(10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(5.0)
-              ),
-              child: ListTile(
-                title: Text(record.toString()),
-                trailing: Text(record.votes.toString()),
-                onTap: (){
-                  print(record);
-                },
-              ),
-            ),
-          );
+          return _buildNameItem(record);
         },
         itemCount: _mockNames.length,
       ),
     );
     return root;
+  }
+
+  Widget _buildStreamBody() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('baby').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return LinearProgressIndicator();
+        }
+        List<DocumentSnapshot> snapshots = snapshot.data.documents;
+        Container root = Container(
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              final record = Record.fromSnapshot(snapshots[index]);
+              return _buildNameItem(record);
+            },
+            itemCount: snapshots.length,
+          ),
+        );
+        return Expanded(child: root);
+      },
+    );
+  }
+
+  Widget _buildNameItem(Record record) {
+    return Padding(
+      key: ValueKey(record.name),
+      padding: EdgeInsets.all(10.0),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(5.0)),
+        child: ListTile(
+          title: Text(record.toString()),
+          trailing: Text(record.votes.toString()),
+          onTap: () {
+            if (record.reference != null) {
+              //Not safe, it will work incorrect when multiple users operating at the same time.
+              //record.reference.updateData({
+              //  'votes': record.votes + 1
+              //});
+
+              //Safe, using Transaction to keep safe.
+              Firestore.instance.runTransaction((transaction) async {
+                final freshSnapshot = await transaction.get(record.reference);
+                final freshRecord = Record.fromSnapshot(freshSnapshot);
+                await transaction
+                    .update(record.reference, {'votes': freshRecord.votes + 1});
+              });
+            }
+          },
+        ),
+      ),
+    );
   }
 }
 
