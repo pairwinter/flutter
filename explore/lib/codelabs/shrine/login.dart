@@ -44,7 +44,7 @@ class LoginPageState extends State<LoginPage> {
             TextField(
               focusNode: focusNode,
               controller: _usernameTextController,
-              decoration: InputDecoration(filled: true, labelText: 'Username'),
+              decoration: InputDecoration(labelText: 'Username'),
               onChanged: (String text) {
                 this.setState(() {
                   _isFilled = text.trim().length > 0 &&
@@ -57,7 +57,7 @@ class LoginPageState extends State<LoginPage> {
             ),
             TextField(
               controller: _passwordTextController,
-              decoration: InputDecoration(filled: true, labelText: 'Password'),
+              decoration: InputDecoration(labelText: 'Password'),
               onChanged: (String text) {
                 this.setState(() {
                   _isFilled = text.trim().length > 0 &&
@@ -82,6 +82,7 @@ class LoginPageState extends State<LoginPage> {
                     },
                     child: Text('Cancel')),
                 RaisedButton(
+                  shape: BeveledRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7.0))),
                   onPressed: _isFilled ? () {} : null,
                   child: Text('Next'),
                 )

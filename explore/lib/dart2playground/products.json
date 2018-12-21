@@ -1,0 +1,16 @@
+[
+  {
+    "category": "home",
+    "id": 1,
+    "name": "Table",
+    "isFeatured": false,
+    "price": 9.99
+  },
+  {
+    "category": "clothing",
+    "id": 2,
+    "name": "Shoes",
+    "isFeatured": false,
+    "price": 4.56
+  }
+]

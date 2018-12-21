@@ -22,7 +22,20 @@ dependencies:
 
   english_words: ^3.1.0
 
+  ########## Access Firebase ##########
   cloud_firestore: ^0.8.2+1
+  firebase_auth: ^0.6.6
+  google_sign_in: ^3.2.4
+  firebase_storage: ^1.0.4
+  ########## Access Firebase ##########
+
+  ########## Toast, Cache data local, Pick images, cache network image and parse data time ##########
+  fluttertoast: ^2.2.1 #Toast, https://pub.dartlang.org/packages/fluttertoast
+  shared_preferences: ^0.4.3 #Cache data local https://pub.dartlang.org/packages/shared_preferences
+  image_picker: ^0.4.10 # Pick images https://pub.dartlang.org/packages/image_picker
+  cached_network_image: ^0.5.1 # https://pub.dartlang.org/packages/cached_network_image
+  intl: ^0.15.7 # https://pub.dartlang.org/packages/intl
+
 
 dev_dependencies:
   flutter_test:
@@ -42,6 +55,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/logo.png
+    - assets/products.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
@@ -68,3 +82,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages
+  fonts:
+    - family: Rubik
+      fonts:
+        - asset: fonts/Rubik-Regular.ttf
+        - asset: fonts/Rubik-Medium.ttf
+          weight: 500
