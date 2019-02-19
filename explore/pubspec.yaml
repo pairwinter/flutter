@@ -22,10 +22,11 @@ dependencies:
 
   english_words: ^3.1.0
 
+  google_sign_in: ^3.2.4
+  #flutter_facebook_login: ^1.2.0
   ########## Access Firebase ##########
   cloud_firestore: ^0.8.2+1
   firebase_auth: ^0.6.6
-  google_sign_in: ^3.2.4
   firebase_storage: ^1.0.4
   ########## Access Firebase ##########
 
