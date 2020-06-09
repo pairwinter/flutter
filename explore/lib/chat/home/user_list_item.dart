@@ -16,7 +16,7 @@ Widget buildUserItem(BuildContext context, String userId, DocumentSnapshot docum
           children: <Widget>[
             Material(
               child: CachedNetworkImage(
-                  placeholder: Container(
+                  placeholder: (context, url) => Container(
                     child: CircularProgressIndicator(
                       strokeWidth: 1.0,
                       valueColor: AlwaysStoppedAnimation<Color>(themeColor),

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'const.dart';
 import 'dao/users_dao.dart';
 import 'model/user.dart';
@@ -78,12 +79,16 @@ class LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
-      GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
-      FirebaseUser firebaseUser = await _firebaseAuth.signInWithGoogle(
+      final GoogleSignInAccount googleSignInAccount = await _googleSignIn
+          .signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+      await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
           idToken: googleSignInAuthentication.idToken,
           accessToken: googleSignInAuthentication.accessToken);
+
+      FirebaseUser firebaseUser = await _firebaseAuth.signInWithCredential(credential);
 
       if (firebaseUser != null) {
         User clientUser = await userDaoGetUser(firebaseUser.uid);
@@ -114,6 +119,57 @@ class LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  Future<Null> handleFacebookSignIn() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    this.setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final facebookLogin = FacebookLogin();
+      facebookLogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
+      final result = await facebookLogin.logInWithReadPermissions(['email', 'public_profile']);
+      var token;
+      switch (result.status) {
+        case FacebookLoginStatus.loggedIn:
+          token = result.accessToken.token;
+          break;
+        default:
+          token = null;
+          break;
+      }
+      if (token != null) {
+        AuthCredential facebookAuthCredential = FacebookAuthProvider.getCredential(accessToken: token);
+        FirebaseUser firebaseUser = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+        if (firebaseUser != null) {
+          User clientUser = await userDaoGetUser(firebaseUser.uid);
+          if (clientUser == null) {
+            clientUser = User(
+                id: firebaseUser.uid,
+                nickname: firebaseUser.displayName,
+                photoUrl: firebaseUser.photoUrl,
+                aboutMe: '');
+            userDaoAddUser(clientUser);
+            _currentUser = clientUser;
+          }
+
+          await _sharedPreferences.setString('id', clientUser.id);
+          await _sharedPreferences.setString('nickname', clientUser.nickname);
+          await _sharedPreferences.setString('photoUrl', clientUser.photoUrl);
+          await _sharedPreferences.setString('aboutMe', clientUser.aboutMe);
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => _buildMainPage()));
+        } else {}
+      }
+    } catch (e) {}
+
+    this.setState(() {
+      this._isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,28 +183,44 @@ class LoginScreenState extends State<LoginScreen> {
       body: Stack(
         children: <Widget>[
           Center(
-            child: FlatButton(
-              onPressed: handleSignIn,
-              child: Text(
-                'Sing in with Google',
-                style: TextStyle(fontSize: 16.0),
-              ),
-              color: Color(0xffdd4b39),
-              highlightColor: Color(0xffff7f7f),
-              splashColor: Colors.transparent,
-              textColor: Colors.white,
-              padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0),
+            child: Column(
+              children: <Widget>[
+                FlatButton(
+                  onPressed: handleSignIn,
+                  child: Text(
+                    'Sing in with Google',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  color: Color(0xffdd4b39),
+                  highlightColor: Color(0xffff7f7f),
+                  splashColor: Colors.transparent,
+                  textColor: Colors.white,
+                  padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0),
+                ),
+                FlatButton(
+                  onPressed: handleFacebookSignIn,
+                  child: Text(
+                    'Sing in with Facbook',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  color: Color(0xffdd4b39),
+                  highlightColor: Color(0xffff7f7f),
+                  splashColor: Colors.transparent,
+                  textColor: Colors.white,
+                  padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0),
+                ),
+              ],
             ),
           ),
           Positioned(
               child: _isLoading
                   ? Container(
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(themeColor),
-                        ),
-                      ),
-                    )
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(themeColor),
+                  ),
+                ),
+              )
                   : Container()),
         ],
       ),

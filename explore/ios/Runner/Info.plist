@@ -50,5 +50,41 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+    <!-- Integrate with facebook login.
+     https://pub.dev/packages/flutter_facebook_login
+     https://developers.facebook.com/docs/facebook-login/ios?sdk=cocoapods
+     -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <!--
+                 Replace "000000000000" with your Facebook App ID here.
+                 **NOTE**: The scheme needs to start with `fb` and then your ID.
+                 -->
+                <string>fb1465987086867831</string>
+                <string>com.googleusercontent.apps.394386518440-54m102rgtfnrkmjsl8jvl53nfs4hm9ib</string>
+            </array>
+        </dict>
+    </array>
+    
+    <key>FacebookAppID</key>
+    
+    <!-- Replace "000000000000" with your Facebook App ID here. -->
+    <string>1465987086867831</string>
+    <key>FacebookDisplayName</key>
+    
+    <!-- Replace "YOUR_APP_NAME" with your Facebook App name. -->
+    <string>Dongdong Liu\'s first app</string>
+    
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>fbapi</string>
+        <string>fb-messenger-share-api</string>
+        <string>fbauth2</string>
+        <string>fbshareextension</string>
+    </array>
+
 </dict>
 </plist>

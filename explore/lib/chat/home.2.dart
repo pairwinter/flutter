@@ -129,7 +129,7 @@ class MainScreenState extends State<MainScreen> {
             children: <Widget>[
               Material(
                 child: CachedNetworkImage(
-                  placeholder: Container(
+                  placeholder: (context, url) => Container(
                     child: CircularProgressIndicator(
                       strokeWidth: 1.0,
                       valueColor: AlwaysStoppedAnimation<Color>(themeColor),
